@@ -18,12 +18,26 @@ const Dashboard = () => {
     async function fetchMetrics() {
       try {
         // Запрос текущих запасов
-        const stockResponse = await fetch(`${API_URL}/api/metrics/current-stock`, {
-          credentials: 'include', // <- чтобы кука отправлялась
-          headers: {
-            "Accept": "application/json"
+        try {
+          const response = await fetch('https://coursework-rksp.onrender.com/api/metrics/current-stock', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Authentication failed');
           }
-        });
+
+          return await response.json();
+        } catch (error) {
+          console.error('Fetch error:', error);
+          // Перенаправить на логин или показать сообщение
+        }
         console.log("stockResponse", stockResponse.status, stockResponse.url);
         const stockData = await stockResponse.json();
 
