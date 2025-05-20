@@ -18,15 +18,21 @@ const Dashboard = () => {
     async function fetchMetrics() {
       try {
         // Запрос текущих запасов
-        const stockResponse = await fetch(`${API_URL}/api/metrics/current-stock`);
+        const stockResponse = await fetch(`${API_URL}/api/metrics/current-stock`, {
+          credentials: 'include', // <- чтобы кука отправлялась
+        });
         const stockData = await stockResponse.json();
 
         // Запрос статуса заказов
-        const statusResponse = await fetch(`${API_URL}/api/metrics/order-status`);
+        const statusResponse = await fetch(`${API_URL}/api/metrics/order-status`, {
+          credentials: 'include', // <- чтобы кука отправлялась
+        });
         const statusData = await statusResponse.json();
 
         // Запрос количества заказов
-        const countResponse = await fetch(`${API_URL}/api/metrics/order-count`);
+        const countResponse = await fetch(`${API_URL}/api/metrics/order-count`, {
+          credentials: 'include', // <- чтобы кука отправлялась
+        });
         const countData = await countResponse.json();
 
         // Обновляем состояние единой метрики
