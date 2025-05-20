@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom'; // если используеш
 
 const Header = () => {
   const navigate = useNavigate();
-
+   const API_URL = process.env.REACT_APP_API_URL;
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/logout', {
+      const response = await fetch(`${API_URL}/api/logout`, {
         method: 'POST',           // POST-запрос на logout
         credentials: 'include',   // чтобы отправлялись куки сессии
       });
