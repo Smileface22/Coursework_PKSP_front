@@ -21,6 +21,7 @@ const Dashboard = () => {
         const stockResponse = await fetch(`${API_URL}/api/metrics/current-stock`, {
           credentials: 'include', // <- чтобы кука отправлялась
         });
+        console.log("stockResponse", stockResponse.status, stockResponse.url);
         const stockData = await stockResponse.json();
 
         // Запрос статуса заказов
