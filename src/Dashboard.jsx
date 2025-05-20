@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './styles/dashboard.css';
 import Header from './Header';
-import { useNavigate } from 'react-router-dom';
+
 const Dashboard = () => {
   const [metrics, setMetrics] = useState({
     currentStock: 0,
@@ -11,68 +11,35 @@ const Dashboard = () => {
     ordersToday: 0,
     ordersThisMonth: 0,
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
+    // Объединяем загрузку данных в один async вызов
+    async function fetchMetrics() {
       try {
-        // Проверяем аутентификацию сначала
-        const authCheck = await fetch(`${API_URL}/api/me`, {
-          credentials: 'include',
+        // Запрос текущих запасов
+        const stockResponse = await fetch(`${API_URL}/api/metrics/current-stock`, {
+          credentials: 'include', // <- чтобы кука отправлялась
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
+          "Accept": "application/json"
+        }
         });
+        console.log("stockResponse", stockResponse.status, stockResponse.url);
+        const stockData = await stockResponse.json();
 
-        if (authCheck.status === 401) {
-          navigate('/login');
-          return;
-        }
+        // Запрос статуса заказов
+        const statusResponse = await fetch(`${API_URL}/api/metrics/order-status`, {
+          credentials: 'include', // <- чтобы кука отправлялась
+        });
+        const statusData = await statusResponse.json();
 
-        if (!authCheck.ok) {
-          throw new Error('Ошибка проверки авторизации');
-        }
+        // Запрос количества заказов
+        const countResponse = await fetch(`${API_URL}/api/metrics/order-count`, {
+          credentials: 'include', // <- чтобы кука отправлялась
+        });
+        const countData = await countResponse.json();
 
-        // Параллельные запросы метрик
-        const [stockRes, statusRes, countRes] = await Promise.all([
-          fetch(`${API_URL}/api/metrics/current-stock`, {
-            credentials: 'include',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          }),
-          fetch(`${API_URL}/api/metrics/order-status`, {
-            credentials: 'include',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          }),
-          fetch(`${API_URL}/api/metrics/order-count`, {
-            credentials: 'include',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          })
-        ]);
-
-        // Проверка всех ответов
-        if (!stockRes.ok || !statusRes.ok || !countRes.ok) {
-          throw new Error('Один из запросов завершился ошибкой');
-        }
-
-        const [stockData, statusData, countData] = await Promise.all([
-          stockRes.json(),
-          statusRes.json(),
-          countRes.json()
-        ]);
-
+        // Обновляем состояние единой метрики
         setMetrics({
           currentStock: stockData.totalStock || 0,
           lowStock: stockData.lowStockCount || 0,
@@ -82,26 +49,12 @@ const Dashboard = () => {
           ordersThisMonth: countData.ordersThisMonth || 0,
         });
       } catch (error) {
-        console.error('Ошибка:', error);
-        setError(error.message);
-        if (error.message.includes('401')) {
-          navigate('/login');
-        }
-      } finally {
-        setLoading(false);
+        console.error('Ошибка при загрузке метрик:', error);
       }
-    };
+    }
 
-    fetchData();
-  }, [API_URL, navigate]);
-
-  if (loading) {
-    return <div className="loading">Загрузка данных...</div>;
-  }
-
-  if (error) {
-    return <div className="error">Ошибка: {error}</div>;
-  }
+    fetchMetrics();
+  }, []);
 
   return (
     <>
