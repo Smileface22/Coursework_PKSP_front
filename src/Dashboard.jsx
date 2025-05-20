@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './styles/dashboard.css';
 import Header from './Header';
-
+import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
   const [metrics, setMetrics] = useState({
     currentStock: 0,
@@ -11,49 +11,68 @@ const Dashboard = () => {
     ordersToday: 0,
     ordersThisMonth: 0,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    // Объединяем загрузку данных в один async вызов
-    async function fetchMetrics() {
+    const fetchData = async () => {
       try {
-        // Запрос текущих запасов
-        try {
-          const response = await fetch('https://coursework-rksp.onrender.com/api/metrics/current-stock', {
-            method: 'GET',
+        // Проверяем аутентификацию сначала
+        const authCheck = await fetch(`${API_URL}/api/me`, {
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (authCheck.status === 401) {
+          navigate('/login');
+          return;
+        }
+
+        if (!authCheck.ok) {
+          throw new Error('Ошибка проверки авторизации');
+        }
+
+        // Параллельные запросы метрик
+        const [stockRes, statusRes, countRes] = await Promise.all([
+          fetch(`${API_URL}/api/metrics/current-stock`, {
             credentials: 'include',
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             }
-          });
+          }),
+          fetch(`${API_URL}/api/metrics/order-status`, {
+            credentials: 'include',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }),
+          fetch(`${API_URL}/api/metrics/order-count`, {
+            credentials: 'include',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          })
+        ]);
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Authentication failed');
-          }
-
-          return await response.json();
-        } catch (error) {
-          console.error('Fetch error:', error);
-          // Перенаправить на логин или показать сообщение
+        // Проверка всех ответов
+        if (!stockRes.ok || !statusRes.ok || !countRes.ok) {
+          throw new Error('Один из запросов завершился ошибкой');
         }
-        console.log("stockResponse", stockResponse.status, stockResponse.url);
-        const stockData = await stockResponse.json();
 
-        // Запрос статуса заказов
-        const statusResponse = await fetch(`${API_URL}/api/metrics/order-status`, {
-          credentials: 'include', // <- чтобы кука отправлялась
-        });
-        const statusData = await statusResponse.json();
+        const [stockData, statusData, countData] = await Promise.all([
+          stockRes.json(),
+          statusRes.json(),
+          countRes.json()
+        ]);
 
-        // Запрос количества заказов
-        const countResponse = await fetch(`${API_URL}/api/metrics/order-count`, {
-          credentials: 'include', // <- чтобы кука отправлялась
-        });
-        const countData = await countResponse.json();
-
-        // Обновляем состояние единой метрики
         setMetrics({
           currentStock: stockData.totalStock || 0,
           lowStock: stockData.lowStockCount || 0,
@@ -63,12 +82,26 @@ const Dashboard = () => {
           ordersThisMonth: countData.ordersThisMonth || 0,
         });
       } catch (error) {
-        console.error('Ошибка при загрузке метрик:', error);
+        console.error('Ошибка:', error);
+        setError(error.message);
+        if (error.message.includes('401')) {
+          navigate('/login');
+        }
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    fetchMetrics();
-  }, []);
+    fetchData();
+  }, [API_URL, navigate]);
+
+  if (loading) {
+    return <div className="loading">Загрузка данных...</div>;
+  }
+
+  if (error) {
+    return <div className="error">Ошибка: {error}</div>;
+  }
 
   return (
     <>
