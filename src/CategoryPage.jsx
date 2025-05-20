@@ -8,9 +8,9 @@ function CategoryPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [formData, setFormData] = useState({ id: null, name: '', description: '' });
-
+  const API_URL = process.env.REACT_APP_API_URL;
   useEffect(() => {
-    fetch('/api/category')
+    fetch(`${API_URL}/api/category`)
       .then(res => {
         if (!res.ok) throw new Error('Ошибка загрузки категорий');
         return res.json();
@@ -26,7 +26,7 @@ function CategoryPage() {
   }
 
   function editCategory(id) {
-    fetch('/api/category/' + id)
+    fetch(`${API_URL}/api/category/` + id)
       .then(res => {
         if (!res.ok) throw new Error('Не удалось загрузить данные категории');
         return res.json();
@@ -56,7 +56,7 @@ function CategoryPage() {
       return;
     }
 
-    const url = formData.id === null ? '/api/category' : `/api/category/${formData.id}/edit`;
+    const url = formData.id === null ? `${API_URL}/api/category` : `${API_URL}/api/category/${formData.id}/edit`;
 
     fetch(url, {
       method: 'POST',
@@ -70,7 +70,7 @@ function CategoryPage() {
       .then(msg => {
         alert(msg || (formData.id === null ? 'Категория добавлена!' : 'Категория обновлена!'));
         closeModal();
-        return fetch('/api/category').then(res => res.json());
+        return fetch(`${API_URL}/api/category`).then(res => res.json());
       })
       .then(data => setCategories(data))
       .catch(err => alert('Ошибка: ' + err.message));
@@ -79,7 +79,7 @@ function CategoryPage() {
   function deleteCategory(id) {
     if (!window.confirm('Вы уверены, что хотите удалить эту категорию?')) return;
 
-    fetch('/api/category/' + id, {
+    fetch(`${API_URL}/api/category/` + id, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     })

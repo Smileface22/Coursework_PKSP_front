@@ -11,21 +11,22 @@ const Dashboard = () => {
     ordersToday: 0,
     ordersThisMonth: 0,
   });
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     // Объединяем загрузку данных в один async вызов
     async function fetchMetrics() {
       try {
         // Запрос текущих запасов
-        const stockResponse = await fetch('/api/metrics/current-stock');
+        const stockResponse = await fetch(`${API_URL}/api/metrics/current-stock`);
         const stockData = await stockResponse.json();
 
         // Запрос статуса заказов
-        const statusResponse = await fetch('/api/metrics/order-status');
+        const statusResponse = await fetch(`${API_URL}/api/metrics/order-status`);
         const statusData = await statusResponse.json();
 
         // Запрос количества заказов
-        const countResponse = await fetch('/api/metrics/order-count');
+        const countResponse = await fetch(`${API_URL}/api/metrics/order-count`);
         const countData = await countResponse.json();
 
         // Обновляем состояние единой метрики

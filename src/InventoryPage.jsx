@@ -13,6 +13,7 @@ const OrdersManagement = () => {
   const [showAddOrderModal, setShowAddOrderModal] = useState(false);
   const [orderItems, setOrderItems] = useState([{ productId: '', quantity: 1, price: 0 }]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   // Загрузка данных при монтировании компонента
   useEffect(() => {
@@ -22,7 +23,7 @@ const OrdersManagement = () => {
   // Функция загрузки заказов и продуктов из API
   const fetchOrders = async () => {
     try {
-      const response = await fetch('/api/orders');
+      const response = await fetch(`${API_URL}/api/orders`);
       const data = await response.json();
       console.log(data.orders );
       setOrders(data.orders || []);
@@ -35,7 +36,7 @@ const OrdersManagement = () => {
   // Получение деталей конкретного заказа
   const fetchOrderDetails = async (orderId) => {
     try {
-      const response = await fetch(`/api/orders/${orderId}`);
+      const response = await fetch(`${API_URL}/api/orders/${orderId}`);
       const data = await response.json();
       setSelectedOrder(data);
       setShowOrderDetails(true);
@@ -47,7 +48,7 @@ const OrdersManagement = () => {
   // Обновление статуса заказа
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const response = await fetch(`/api/orders/${orderId}/status`, {
+      const response = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -126,7 +127,7 @@ const OrdersManagement = () => {
         .filter(item => item.productId)
         .map(item => item.quantity);
 
-      const response = await fetch('/api/orders', {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

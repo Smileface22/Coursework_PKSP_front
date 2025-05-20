@@ -8,6 +8,7 @@ const Inventory = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("Добавить товар");
   const [editingProductId, setEditingProductId] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   // Данные формы
   const [formData, setFormData] = useState({
@@ -20,12 +21,12 @@ const Inventory = () => {
 
   // Загрузка продуктов и категорий при загрузке компонента
   useEffect(() => {
-    fetch("/api/inventory")
+    fetch(`${API_URL}/api/inventory`)
       .then((res) => res.json())
       .then(setProducts)
       .catch(() => alert("Ошибка при загрузке продуктов"));
 
-    fetch("/api/category")
+    fetch(`${API_URL}/api/category`)
       .then((res) => res.json())
       .then(setCategories)
       .catch(() => alert("Ошибка при загрузке категорий"));
@@ -45,7 +46,7 @@ const Inventory = () => {
   };
 
   const openEditProductForm = (productId) => {
-    fetch(`/api/inventory/${productId}`)
+    fetch(`${API_URL}/api/inventory/${productId}`)
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -85,8 +86,8 @@ const Inventory = () => {
     };
 
     const url = editingProductId
-      ? `/api/inventory/${editingProductId}/edit`
-      : "/api/inventory";
+      ? `${API_URL}/api/inventory/${editingProductId}/edit`
+      : `${API_URL}/api/inventory`;
 
     fetch(url, {
       method: "POST",
@@ -100,7 +101,7 @@ const Inventory = () => {
         alert(editingProductId ? "Продукт успешно обновлен!" : "Продукт успешно добавлен!");
         setModalOpen(false);
         // Перезагружаем список продуктов после успешного добавления/обновления
-        return fetch("/api/inventory").then((res) => res.json());
+        return fetch(`${API_URL}/api/inventory`).then((res) => res.json());
       })
       .then(setProducts)
       .catch(() => alert("Ошибка при сохранении продукта. Попробуйте еще раз."));
