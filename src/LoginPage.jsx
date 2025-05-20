@@ -12,9 +12,9 @@ function LoginPage() {
     const params = new URLSearchParams();
     params.append('username', email);
     params.append('password', password);
-
+    const API_URL = process.env.REACT_APP_API_URL;
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
