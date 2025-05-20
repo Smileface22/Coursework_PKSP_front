@@ -20,6 +20,9 @@ const Dashboard = () => {
         // Запрос текущих запасов
         const stockResponse = await fetch(`${API_URL}/api/metrics/current-stock`, {
           credentials: 'include', // <- чтобы кука отправлялась
+          headers: {
+            "Accept": "application/json"
+          }
         });
         console.log("stockResponse", stockResponse.status, stockResponse.url);
         const stockData = await stockResponse.json();
