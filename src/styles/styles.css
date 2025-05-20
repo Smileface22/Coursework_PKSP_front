@@ -1,0 +1,109 @@
+.home-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9; /* Светлый фон */
+    margin: 0;
+    padding: 0;
+}
+
+.home-page header {
+    background-color: #007bff; /* Синий фон */
+    color: white;
+    padding: 20px 30px; /* Увеличиваем высоту хедера */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.home-page .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.home-page .nav-buttons {
+    margin-left: auto; /* Располагаем кнопки справа */
+}
+
+.home-page .nav-buttons a {
+    text-decoration: none;
+    color: white;
+    margin-left: 15px;
+    padding: 10px 15px;
+    border: 1px solid white;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.home-page .nav-buttons a:hover {
+    background-color: #0056b3; /* Темно-синий при наведении */
+}
+
+.home-page main {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    height: 100vh;
+    padding: 20px;
+    background-color: #f4f4f9; /* Светлый фон */
+}
+
+.home-page .container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+}
+
+.home-page h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.home-page p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+.home-page .benefits {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.home-page .benefits h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.home-page .benefits ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    font-size: 16px;
+    color: #555;
+}
+
+.home-page .start-button {
+    margin-top: 20px;
+}
+
+.home-page .start-button .btn {
+    background-color: #007bff; /* Синий фон для кнопки */
+    color: white;
+    padding: 12px 30px;
+    font-size: 18px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.home-page .start-button .btn:hover {
+    background-color: #0056b3; /* Темно-синий при наведении на кнопку */
+}
